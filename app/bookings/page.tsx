@@ -51,10 +51,6 @@ function BookingsPageContent() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
-  useEffect(() => {
-    loadBookings();
-  }, []);
-
   async function loadBookings() {
     const {
       data: { session },
@@ -81,6 +77,12 @@ function BookingsPageContent() {
     setBookings(data ?? []);
     setLoading(false);
   }
+
+  useEffect(() => {
+    void Promise.resolve().then(loadBookings);
+    // Dashboard data should load once after the client mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function updateStatus(id: number, status: string) {
     setUpdatingId(id);
@@ -200,7 +202,7 @@ const query = search.trim().toLowerCase();
       <div className="flex min-h-screen">
         <DashboardSidebar />
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 pt-16 lg:pt-0">
           <header className="border-b border-white/10 px-5 py-5 md:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -220,7 +222,7 @@ const query = search.trim().toLowerCase();
                 </p>
               </div>
 
-              <div className="flex w-[300px] items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4">
+              <div className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 sm:w-[300px]">
                 <Search
                   size={17}
                   className="text-zinc-500"

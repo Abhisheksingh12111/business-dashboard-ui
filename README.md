@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BusinessFlow Dashboard
 
-## Getting Started
+A responsive business management dashboard built with Next.js and Supabase. It includes Overview, Bookings, Customers, Leads, Services, Payments, Reports, and Settings modules.
 
-First, run the development server:
+## Local setup
+
+1. Copy `.env.example` to `.env.local`.
+2. Add the Supabase values and a long random integration API key.
+3. Install dependencies and start the app:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Add these variables in Project Settings → Environment Variables and redeploy:
 
-## Learn More
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SERVICE_ROLE_KEY
+DASHBOARD_INGEST_API_KEY
+```
 
-To learn more about Next.js, take a look at the following resources:
+`SUPABASE_SERVICE_ROLE_KEY` and `DASHBOARD_INGEST_API_KEY` are server-only secrets. Never prefix them with `NEXT_PUBLIC_` or put them in website browser code.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Automation API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The integration endpoints accept server-to-server `POST` requests. Send the shared secret using `Authorization: Bearer <DASHBOARD_INGEST_API_KEY>` or the `x-api-key` header.
 
-## Deploy on Vercel
+### Add a website lead
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+curl -X POST https://your-dashboard.vercel.app/api/integrations/leads \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_SECRET" \
+  -d '{
+    "name": "Aarav Sharma",
+    "phone": "+91 98765 43210",
+    "email": "aarav@example.com",
+    "source": "Website",
+    "interest": "Premium package",
+    "notes": "Requested a callback"
+  }'
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Add a website booking
+
+```bash
+curl -X POST https://your-dashboard.vercel.app/api/integrations/bookings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_SECRET" \
+  -d '{
+    "customer_name": "Aarav Sharma",
+    "phone": "+91 98765 43210",
+    "email": "aarav@example.com",
+    "service": "Consultation",
+    "booking_date": "2026-09-20",
+    "booking_time": "15:30",
+    "source": "Website"
+  }'
+```
+
+A booking also creates a Customer record when no matching email or phone exists.
+
+### Add a successful online payment
+
+```bash
+curl -X POST https://your-dashboard.vercel.app/api/integrations/payments \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_SECRET" \
+  -d '{
+    "customer_name": "Aarav Sharma",
+    "service": "Consultation",
+    "amount": 2500,
+    "payment_method": "Razorpay",
+    "status": "Paid",
+    "reference": "pay_example123"
+  }'
+```
+
+The payment endpoint is designed to be called by the verified success handler or webhook adapter of the selected payment provider. Provider signature verification must happen before forwarding the normalized payment data to this endpoint.
+
+## Checks
+
+```bash
+npm run lint
+npm run build
+```

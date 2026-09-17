@@ -49,10 +49,6 @@ export default function PaymentsPage() {
     notes: "",
   });
 
-  useEffect(() => {
-    loadPayments();
-  }, []);
-
   async function loadPayments() {
     const {
       data: { session },
@@ -77,6 +73,12 @@ export default function PaymentsPage() {
     setPayments(data ?? []);
     setLoading(false);
   }
+
+  useEffect(() => {
+    void Promise.resolve().then(loadPayments);
+    // Dashboard data should load once after the client mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function createPayment(
     e: React.FormEvent<HTMLFormElement>
@@ -245,7 +247,7 @@ async function savePayment(payment: Payment) {
       <div className="flex min-h-screen">
         <DashboardSidebar />
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 pt-16 lg:pt-0">
           <header className="border-b border-white/10 px-5 py-5 md:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -265,8 +267,8 @@ async function savePayment(payment: Payment) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="flex w-[280px] items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4">
+              <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
+                <div className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 sm:w-[280px]">
                   <Search
                     size={17}
                     className="text-zinc-500"
@@ -286,7 +288,7 @@ async function savePayment(payment: Payment) {
                   onClick={() =>
                     setShowAddPayment(true)
                   }
-                  className="flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-black"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-black sm:w-auto"
                 >
                   <Plus size={17} />
                   Add Payment

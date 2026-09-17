@@ -29,10 +29,6 @@ export default function SettingsPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
   async function loadSettings() {
     const {
       data: { session },
@@ -58,6 +54,12 @@ export default function SettingsPage() {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    void Promise.resolve().then(loadSettings);
+    // Account data should load once after the client mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function toggleNotifications() {
     const newValue = !notifications;
@@ -131,7 +133,7 @@ export default function SettingsPage() {
       <div className="flex min-h-screen">
         <DashboardSidebar />
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 pt-16 lg:pt-0">
           <header className="border-b border-white/10 px-5 py-5 md:px-8">
             <div className="flex items-center gap-2">
               <Settings

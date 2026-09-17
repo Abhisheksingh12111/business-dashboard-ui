@@ -67,10 +67,6 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadReports();
-  }, []);
-
   async function loadReports() {
     const {
       data: { session },
@@ -142,6 +138,12 @@ export default function ReportsPage() {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    void Promise.resolve().then(loadReports);
+    // Dashboard data should load once after the client mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const paidPayments = useMemo(() => {
     return payments.filter(
@@ -353,7 +355,7 @@ export default function ReportsPage() {
       <div className="flex min-h-screen">
         <DashboardSidebar />
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 pt-16 lg:pt-0">
           <header className="border-b border-white/10 px-5 py-5 md:px-8">
             <div>
               <div className="flex items-center gap-2">

@@ -7,19 +7,15 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 import {
-  LayoutDashboard,
   CalendarDays,
   Users,
-  Settings,
   Search,
- LogOut,
   Bell,
   ArrowUpRight,
   TrendingUp,
   Clock3,
   CheckCircle2,
   MoreHorizontal,
-  ChevronDown,
   Plus,
   Loader2,
 } from "lucide-react";
@@ -44,6 +40,16 @@ type Booking = {
   created_at: string;
 };
 
+type Customer = {
+  id: number;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  source: string | null;
+  status: string | null;
+  notes: string | null;
+};
+
 type ChartItem = {
   day: string;
   bookings: number;
@@ -54,7 +60,7 @@ export default function Home() {
 
   const [loading, setLoading] = useState(true);
   const [totalCustomers, setTotalCustomers] = useState(0);
- const [customers, setCustomers] = useState<any[]>([]);
+ const [customers, setCustomers] = useState<Customer[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [chartData, setChartData] = useState<ChartItem[]>([]);
   const [error, setError] = useState("");
@@ -220,10 +226,6 @@ async function createBooking(e: React.FormEvent<HTMLFormElement>) {
   setShowNewBooking(false);
   setSavingBooking(false);
 }
-async function handleLogout() {
-  await supabase.auth.signOut();
-  router.replace("/login");
-}
 if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#070a0f] text-white">
@@ -281,7 +283,7 @@ const bookingSearchResults = normalizedSearch
      <DashboardSidebar />
 
         <main className="min-w-0 flex-1 pt-16 lg:pt-0">
-          <header className="flex h-[76px] items-center justify-between border-b border-white/10 px-5 md:px-8">
+          <header className="flex min-h-[76px] flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4 md:px-8">
             <div>
               <h1 className="text-xl font-semibold">Dashboard Overview</h1>
               <p className="text-sm text-zinc-500">
@@ -303,7 +305,7 @@ const bookingSearchResults = normalizedSearch
   className="w-36 bg-transparent text-sm outline-none placeholder:text-zinc-600"
 />
   {showSearchResults && normalizedSearch && (
-  <div className="absolute right-0 top-12 z-50 w-[380px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl">
+  <div className="absolute right-0 top-12 z-50 w-[min(380px,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl">
     <div className="border-b border-white/10 px-4 py-3">
       <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
         Search Results
@@ -403,7 +405,7 @@ const bookingSearchResults = normalizedSearch
   </button>
 
   {showNotifications && (
-    <div className="absolute right-0 top-14 z-50 w-[340px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl">
+    <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl">
       <div className="border-b border-white/10 px-4 py-4">
         <p className="font-semibold">Notifications</p>
         <p className="mt-1 text-xs text-zinc-500">
@@ -456,10 +458,11 @@ const bookingSearchResults = normalizedSearch
 </div>
                <button
   onClick={() => setShowNewBooking(true)}
-  className="flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-black"
+  className="flex items-center gap-2 rounded-xl bg-emerald-400 px-3 py-2.5 text-sm font-semibold text-black sm:px-4"
 >
                 <Plus size={16} />
-                New Booking
+                <span className="hidden sm:inline">New Booking</span>
+                <span className="sm:hidden">New</span>
               </button>
             </div>
           </header>
@@ -924,29 +927,6 @@ function formatTime(time: string | null) {
   const displayHour = hour % 12 || 12;
 
   return `${displayHour}:${minute} ${period}`;
-}
-
-function NavItem({
-  icon,
-  label,
-  active = false,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-}) {
-  return (
-    <button
-      className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm ${
-        active
-          ? "bg-emerald-400 text-black"
-          : "text-zinc-400 hover:bg-white/5 hover:text-white"
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
 }
 
 function StatCard({
