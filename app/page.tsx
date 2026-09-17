@@ -291,7 +291,7 @@ const bookingSearchResults = normalizedSearch
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="ml-auto flex shrink-0 items-center justify-end gap-3">
               <div className="relative hidden items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 md:flex">
                 <Search size={16} className="text-zinc-500" />
                 <input
