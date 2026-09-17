@@ -405,54 +405,73 @@ const bookingSearchResults = normalizedSearch
   </button>
 
   {showNotifications && (
-    <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl">
-      <div className="border-b border-white/10 px-4 py-4">
-        <p className="font-semibold">Notifications</p>
-        <p className="mt-1 text-xs text-zinc-500">
-          {pendingCount} pending bookings
-        </p>
-      </div>
-
-      <div className="max-h-[320px] overflow-y-auto">
-        {bookings
-          .filter(
-            (booking) => booking.status?.toLowerCase() === "pending"
-          )
-          .slice(0, 5)
-          .map((booking) => (
-            <button
-              key={booking.id}
-              onClick={() => {
-                setShowNotifications(false);
-                router.push("/bookings");
-              }}
-              className="flex w-full items-start gap-3 border-b border-white/[0.06] px-4 py-4 text-left hover:bg-white/[0.03]"
-            >
-              <div className="mt-1 h-2 w-2 rounded-full bg-emerald-400" />
-
-              <div>
-                <p className="text-sm font-medium">
-                  New booking from {booking.customer_name ?? "Customer"}
-                </p>
-
-                <p className="mt-1 text-xs text-zinc-500">
-                  {booking.service ?? "Service"} •{" "}
-                  {formatDate(booking.booking_date)}
-                </p>
-              </div>
-            </button>
-          ))}
-      </div>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:absolute md:inset-auto md:right-0 md:top-14 md:block md:bg-transparent md:p-0 md:backdrop-blur-none">
       <button
-        onClick={() => {
-          setShowNotifications(false);
-          router.push("/bookings");
-        }}
-        className="w-full px-4 py-3 text-sm font-medium text-emerald-400 hover:bg-white/[0.03]"
-      >
-        View all bookings
-      </button>
+        type="button"
+        aria-label="Close notifications"
+        onClick={() => setShowNotifications(false)}
+        className="absolute inset-0 md:hidden"
+      />
+
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0c1118] shadow-2xl md:w-[340px]">
+        <div className="flex items-start justify-between border-b border-white/10 px-4 py-4">
+          <div>
+            <p className="font-semibold">Notifications</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              {pendingCount} pending bookings
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowNotifications(false)}
+            className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400 md:hidden"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="max-h-[60vh] overflow-y-auto md:max-h-[320px]">
+          {bookings
+            .filter(
+              (booking) => booking.status?.toLowerCase() === "pending"
+            )
+            .slice(0, 5)
+            .map((booking) => (
+              <button
+                key={booking.id}
+                onClick={() => {
+                  setShowNotifications(false);
+                  router.push("/bookings");
+                }}
+                className="flex w-full items-start gap-3 border-b border-white/[0.06] px-4 py-4 text-left hover:bg-white/[0.03]"
+              >
+                <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">
+                    New booking from {booking.customer_name ?? "Customer"}
+                  </p>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {booking.service ?? "Service"} •{" "}
+                    {formatDate(booking.booking_date)}
+                  </p>
+                </div>
+              </button>
+            ))}
+        </div>
+
+        <button
+          onClick={() => {
+            setShowNotifications(false);
+            router.push("/bookings");
+          }}
+          className="w-full px-4 py-3 text-sm font-medium text-emerald-400 hover:bg-white/[0.03]"
+        >
+          View all bookings
+        </button>
+      </div>
     </div>
   )}
 </div>
