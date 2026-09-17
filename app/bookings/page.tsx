@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -24,16 +24,33 @@ type Booking = {
 };
 
 export default function BookingsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#070a0f] text-white">
+          <div className="flex items-center gap-3 text-zinc-400">
+            <Loader2 className="animate-spin text-emerald-400" />
+            Loading bookings...
+          </div>
+        </div>
+      }
+    >
+      <BookingsPageContent />
+    </Suspense>
+  );
+}
+
+function BookingsPageContent() {
   const router = useRouter();
-const searchParams = useSearchParams();
- const bookingId = searchParams.get("booking");
-const statusFilter = searchParams.get("status");
- const [bookings, setBookings] = useState<Booking[]>([]);
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("booking");
+  const statusFilter = searchParams.get("status");
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   useEffect(() => {
     loadBookings();
   }, []);

@@ -257,7 +257,12 @@ export default function ReportsPage() {
   const revenueChart = useMemo(() => {
     const now = new Date();
 
-    const months = [];
+    const months: Array<{
+      year: number;
+      month: number;
+      name: string;
+      revenue: number;
+    }> = [];
 
     for (let i = 5; i >= 0; i--) {
       const date = new Date(

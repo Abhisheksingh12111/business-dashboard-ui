@@ -1018,8 +1018,13 @@ function Progress({
 }: {
   label: string;
   value: string | number;
-  width: number;
+  width: string | number;
 }) {
+  const normalizedWidth =
+    typeof width === "number"
+      ? `${Math.min(Math.max(width, 0), 100)}%`
+      : width;
+
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
@@ -1030,9 +1035,7 @@ function Progress({
       <div className="h-2 overflow-hidden rounded-full bg-white/5">
         <div
           className="h-full rounded-full bg-emerald-400"
-          style={{
-            width: `${Math.min(Math.max(width, 0), 100)}%`,
-          }}
+          style={{ width: normalizedWidth }}
         />
       </div>
     </div>
